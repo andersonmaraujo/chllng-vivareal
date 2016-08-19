@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<title>Register a new propertys</title>
+</head>
+<body>
+<form method="post" action="/properties">
+
+{% if error_message %}
+<h2>An error has occurred: {{ error_message }}</h2>
+{% endif %}
+
+<p>
+<label for="x">X:</label> 
+<input type="text" value="{%if property %}{{ property.x }}{% endif %}" name="x" id="x" />
+</p>
+
+<p>
+<label for="y">Y:</label> 
+<input type="text" name="y" id="y" value="{%if property %}{{ property.y }}{% endif %}" />
+</p>
+
+<p>
+<label for="title">Title:</label> 
+<input type="text" name="title" id="title" value="{%if property %}{{ property.title }}{% endif %}" />
+</p>
+
+<p>
+<label for="price">Price:</label> 
+<input type="text" name="price" id="price" value="{%if property %}{{ property.price }}{% endif %}" />
+</p>
+
+<p>
+<label for="description">Description:</label> 
+<input type="text" name="description" id="description" value="{%if property %}{{ property.description }}{% endif %}" />
+</p>
+
+<p>
+<label for="beds">Beds:</label> 
+<select name="beds" id="beds">
+	<option {%if property %}{% if property.beds == '1' %} selected {% endif %}{% endif %} value="1">1</option>
+	<option {%if property %}{% if property.beds == '2' %} selected {% endif %}{% endif %} value="2">2</option>
+	
+	<option {%if property %}{% if property.beds == '3' %} selected {% endif %}{% endif %} value="3">3</option>
+	<option {%if property %}{% if property.beds == '4' %} selected {% endif %}{% endif %} value="4">4</option>
+	<option {%if property %}{% if property.beds == '5' %} selected {% endif %}{% endif %} value="5">5</option>
+</select>
+</p>
+
+<p>
+<label for="baths">Baths:</label> 
+<select name="baths" id="baths">
+	<option {%if property %}{% if property.baths == '1' %} selected {% endif %}{% endif %} value="1">1</option>
+	<option {%if property %}{% if property.baths == '2' %} selected {% endif %}{% endif %} value="2">2</option>
+	<option {%if property %}{% if property.baths == '3' %} selected {% endif %}{% endif %} value="3">3</option>
+	<option {%if property %}{% if property.baths == '4' %} selected {% endif %}{% endif %} value="4">4</option>
+</select>
+</p>
+
+<p>
+<label for="squareMeters">Square Meters:</label>
+<input type="text" value="{%if property %}{{ property.squareMeters }}{% endif %}" name="squareMeters" />
+</p>
+
+<input type="submit" name="OK" value="Register">
+</form>
+</body>
+</html>
