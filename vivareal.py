@@ -10,7 +10,6 @@ app = Flask(__name__)
 @app.route("/properties", methods=['GET', 'POST'])
 def properties():
 	if request.method == 'POST':
-		
 		s = Schema({
 			Required("x"): ValidateAreaX,
 			Required("y"): ValidateAreaY,
@@ -36,10 +35,22 @@ def properties():
 				"squareMeters": property.squareMeters
 				})
 		except MultipleInvalid as e:
-			return render_template('register.html', error_message=e, property=property)
+			RESULTS = {
+				'error': {
+					'status': 400,
+					'message': str(e)
+				}
+			}
+			return Response(json.dumps(RESULTS), status=400, mimetype='application/json')
 
 		db.createProperty(property)
-		return render_template('registered.html', property=property)
+		property.provinces = db.getProvincesOfProperty(property.x, property.y)
+
+		RESULTS = {
+			'provinces': property.provinces
+		}
+
+		return Response(json.dumps(RESULTS), status=200, mimetype='application/json')
 	else:
 		s = Schema({
 				Required("ax"): ValidateAreaX,
@@ -56,7 +67,13 @@ def properties():
 				"by": request.args.get("by", -1)
 			})
 		except MultipleInvalid as e:
-			return render_template('register.html', error_message=e)
+			RESULTS = {
+				'error': {
+					'status': 400,
+					'message': str(e)
+				}
+			}
+			return Response(json.dumps(RESULTS), status=400, mimetype='application/json')
 
 		properties_results = db.query_db(
 			"""select * from properties where x >= ? and x <= ? and y >= ? and y <= ?"""
@@ -71,17 +88,22 @@ def properties():
 			entry['provinces'] = db.getProvincesOfProperty(entry['x'], entry['y'])
 			RESULTS['properties'].append(entry)
 
-		return jsonify(RESULTS)
+		return Response(json.dumps(RESULTS), status=200, mimetype='application/json')
 
 @app.route("/properties/<int:propertieid>")
 def properties_detail(propertieid):
 	property = db.query_db('select * from properties where id = ?', [propertieid], one=True)
 	if property is None:
-		return "No such property"
+		RESULTS = {
+			'error': {
+				'status': 400,
+				'message': 'No property found.'
+			}
+		}
+		return Response(json.dumps(RESULTS), status=400, mimetype='application/json')
 	else:
 		property['provinces'] = db.getProvincesOfProperty(property['x'], property['y'])
-		resp = Response(json.dumps(property), status=200, mimetype='application/json')
-	return resp
+		return Response(json.dumps(property), status=200, mimetype='application/json')
 
 @app.route("/reset_properties")
 def reset_properties():
